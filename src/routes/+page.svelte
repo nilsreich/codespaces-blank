@@ -1,18 +1,30 @@
 <script lang="ts">
-  import Post from '$lib/components/Post.svelte'
-  import type { PageData } from './$types'
 
-  // data returned from +page.server.js
-  export let data: PageData
+  let title = ''
+
+
+  const handleSubmit = async (e: SubmitEvent) => {
+    e.preventDefault()
+    await (
+      await fetch('/api/post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+        }),
+      })
+    ).json()
+
+  }
 </script>
 
 <div>
-  <h1>My Blog</h1>
-  <main>
-    <div>
-      {#each data.feed as post (post.id)}
-        <Post {post} />
-      {/each}
-    </div>
-  </main>
+  <form on:submit={handleSubmit}>
+    <h1>Create Draft</h1>
+    <input placeholder="Title" type="text" bind:value={title} />
+
+    <input type="submit" value="Create" />
+  </form>
 </div>
